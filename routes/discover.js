@@ -9,8 +9,12 @@ router.get("/get-images/:category/:shuffle", async (req, res, next) => {
 	const reqCategory = req.params.category;
 	const shuffle = req.params.shuffle;
 
+	var data = imgGallery.find();
+	data.count((err,count)=>{
+		skip = (skip + parseInt(shuffle)) % count;
+		console.log(count);
+	})
 	
-	skip = (skip + parseInt(shuffle)); // it will give new images everytime we click shuffle.
 
 	const getImages = await imgGallery.find({ category: { $in: [reqCategory] } }).select({ name: 1, _id: 0 }).sort({ createdAt: 1 }).skip(skip).limit(2);
 	if(getImages.length===0){
