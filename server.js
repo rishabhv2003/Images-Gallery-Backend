@@ -1,20 +1,19 @@
-/* env files */
+const path = require("path");
 const dotenv = require("dotenv");
 dotenv.config();
-/* importing express */
+
 const express = require("express");
 const app = express();
 
-/* importing mongoose */
 const mongoose = require("mongoose");
 
-/* importing admin routes */
 const discover = require("./routes/discover");
 const admin = require("./routes/admin");
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+app.set('view engine', 'ejs');
 
 const mongoUrl = process.env.MONGODB_URI;
 mongoose.set('strictQuery', true).connect(mongoUrl, {
@@ -31,20 +30,21 @@ app.get("/health", (req, res) => {
     res.send(`Backend server is active status:active & time: ${new Date()}`);
 })
 
-
-
 app.use("/admin", admin);
 app.use("/discover", discover);
 
+// APIs to serve contents.
+app.get("/", (req,res)=>{
+    res.render(__dirname + "/views/index.ejs");
+});
 
-/* middleware for handeling error */
+
 app.use((req, res, next) => {
     const err = new Error("Something went wrong! Please try after some time.");
     err.status(404);
     next(err);
 });
 
-/* pages not found error */
 app.use((err, req, res, next) => {
     res.status(err.status || 500);
     res.send({
@@ -54,6 +54,9 @@ app.use((err, req, res, next) => {
         }
     })
 });
+
+
+
 
 /* server listener */
 const port = process.env.PORT || 3000;
