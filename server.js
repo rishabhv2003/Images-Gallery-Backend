@@ -27,7 +27,7 @@ mongoose.set('strictQuery', true).connect(mongoUrl, {
 
 
 app.get("/health", (req, res) => {
-    res.send(`Backend server is active status:active & time: ${new Date()}`);
+    res.send(`Backend server is active status: active & time: ${new Date()}`);
 })
 
 app.use("/admin", admin);
@@ -39,12 +39,12 @@ app.get("/", (req,res)=>{
 });
 
 
+// middleware to handle errors on all routes.
 app.use((req, res, next) => {
     const err = new Error("Something went wrong! Please try after some time.");
     err.status(404);
     next(err);
 });
-
 app.use((err, req, res, next) => {
     res.status(err.status || 500);
     res.send({

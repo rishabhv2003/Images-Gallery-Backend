@@ -2,6 +2,8 @@ const express = require('express');
 const router = express.Router();
 const imgCategory = require("../models/imgCategory");
 const imgGallery = require("../models/imgGallery");
+
+// For adding the category to the data base.
 router.get("/add-category/:categoryName", (req, res, next) => {
 	try {
 		var categoryName = req.params.categoryName;

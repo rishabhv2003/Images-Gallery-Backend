@@ -8,14 +8,13 @@ router.get("/get-images/:category/:shuffle", async (req, res, next) => {
 	try {
 		const reqCategory = req.params.category;
 		const shuffle = req.params.shuffle;
-
 		var data = imgGallery.find();
 		data.count((err, count) => {
 			skip = (skip + parseInt(shuffle)) % count;
 		})
 
 		var getImages = await imgGallery.find({ category: { $in: [reqCategory] } }).select({ name: 1, _id: 0 }).sort({ createdAt: 1 }).skip(skip).limit(4);
-		if(getImages.length === 0 ){
+		if (getImages.length === 0) {
 			skip = 0;
 			getImages = await imgGallery.find({ category: { $in: [reqCategory] } }).select({ name: 1, _id: 0 }).sort({ createdAt: 1 }).limit(4);
 		}
@@ -27,7 +26,7 @@ router.get("/get-images/:category/:shuffle", async (req, res, next) => {
 	/* sending json file of the requested categories */
 });
 
-router.get("/get-images", async (req, res, next) => {
+router.get("/get-images/", async (req, res, next) => {
 	/* getting images based on filter */
 	try {
 		const imgFilter = req.query.filter;
@@ -40,25 +39,22 @@ router.get("/get-images", async (req, res, next) => {
 	/* sending json file of the requested category */
 });
 
-router.get("/likes/:imageId", async (req,res,next) => {
+router.get("/likes/:imageId", async (req, res, next) => {
 	try {
 		const imageId = req.params.imageId;
-
-		if(!imageId){
+		if (!imageId) {
 			res.status(400).send("Bad Request");
 		}
-
 		let likeValue;
 		const imageDetails = await imgGallery.findOne({ _id: imageId });
-
-        if (imageDetails) {
-            if (imageDetails.likes) {
-                likeValue = 0;
-            } else {
-                likeValue = 1;
-            }
-        }
-		await imgGallery.updateOne({_id: imageId},{$set: {likes: likeValue}});
+		if (imageDetails) {
+			if (imageDetails.likes) {
+				likeValue = 0;
+			} else {
+				likeValue = 1;
+			}
+		}
+		await imgGallery.updateOne({ _id: imageId }, { $set: { likes: likeValue } });
 		res.send("Favorite updated");
 	} catch (error) {
 		console.log(error);
